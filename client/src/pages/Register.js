@@ -1,13 +1,28 @@
-import {Form, Input} from 'antd'
-import { Link } from 'react-router-dom';
+import {Form, Input, message} from 'antd'
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios'
+import { useState } from 'react';
+import Spinner from '../components/Spinner';
 
 const Register = () => {
-    const handleSubmit = (values) => {
-        console.log(values)
+    const[loading, setLoading] = useState(false)
+    const navigate = useNavigate()
+    const handleSubmit = async (values) => {
+        try {
+            setLoading(true)
+            await axios.post('/users/register', values)
+            message.success('Registration successful')
+            setLoading(false)
+            navigate('/login')
+        } catch (error) {
+            setLoading(false)
+            message.error("Something went wrong")
+        }
     }
   return (
     <>
       <div className="register-page">
+        {loading && <Spinner/>}
         <Form layout='vertical' onFinish={handleSubmit}>
             <h1>Register Form</h1>
             <Form.Item label="Name" name='name'>
