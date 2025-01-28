@@ -1,7 +1,7 @@
 import {Form, Input, message} from 'antd'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Spinner from '../components/Spinner';
 
 const Register = () => {
@@ -19,6 +19,14 @@ const Register = () => {
             message.error("Something went wrong")
         }
     }
+
+    // prevent login user
+    useEffect(() => {
+        if(localStorage.getItem('user')){
+            navigate('/')
+        }
+    },[navigate]);
+    
   return (
     <>
       <div className="register-page">
