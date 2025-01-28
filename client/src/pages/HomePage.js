@@ -1,17 +1,85 @@
 import Layout from "../components/Layout/Layout";
-import { useState } from "react";
-import { Form, Input, Modal, Select} from 'antd'
+import { useState, useEffect } from "react";
+import { Form, Input, message, Modal, Select, Table} from 'antd'
+import  axios  from "axios";
+import Spinner from "../components/Spinner";
 
 const HomePage = () => {
   const[showModal, setshowModal] = useState(false)
+  const[loading, setLoading] = useState(false)
+  const[allTrans, setallTrans] = useState([])
+
+  //table data
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex:'date',
+    },
+    {
+      title: 'Amount',
+      dataIndex:'amount',
+    },
+    {
+      title: 'Type',
+      dataIndex:'type',
+    },
+    {
+      title: 'Category',
+      dataIndex:'category',
+    },
+    {
+      title: 'Reference',
+      dataIndex:'reference',
+    },
+    {
+      title: 'Actions',
+    }
+  ]
+
+  const getAlltrans = async()=>{
+    try {
+      const user = JSON.parse(localStorage.getItem('user')) 
+      setLoading(true)
+      const res = await axios.post('/transactions/get-transaction', {userid: user._id})
+      setLoading(false)
+
+      //adding unique keys
+      const transactionsWithKeys = res.data.map((item, index) => ({
+        ...item,
+        key: item._id || index, 
+      }));
+      setallTrans(transactionsWithKeys)
+      console.log(transactionsWithKeys);
+      
+    } catch (error) {
+      console.log(error);
+      message.error("Fetch Issue")
+    }
+  }
+
+  useEffect(()=>{
+    getAlltrans()
+  },[])
+
   //form handle
-  const handleSubmit = (values) => {
-    console.log(values);
+  const handleSubmit = async(values) => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'))
+      setLoading(true)
+      await axios.post('/transactions/add-transaction', { ...values, userid:user._id})
+      setLoading(false)
+      message.success('Transaction added successfully')
+      setshowModal(false)
+    } catch (error) {
+      setLoading(false)
+      message.error("Failed to add")
+    }
   }
   
   return (
     <div>
         <Layout>
+          {loading && <Spinner/>}
             <div className="filters">
               <div>range filters</div>
               <div>
@@ -20,7 +88,9 @@ const HomePage = () => {
                 </button>
               </div>
             </div>
-            <div className="content"></div>
+            <div className="content">
+              <Table columns={columns} dataSource={allTrans}/>
+            </div>
             <Modal title='Add Transaction' 
             open={showModal} 
             onCancel={() => setshowModal(false)}
