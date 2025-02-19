@@ -14,6 +14,7 @@ connectDb()
   
 //rest object
 const app = express()
+app.disable("etag")
 
 //middleware
 app.use(morgan('dev'))

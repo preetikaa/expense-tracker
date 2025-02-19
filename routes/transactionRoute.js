@@ -1,21 +1,18 @@
-const express = require('express')
-const { addTrans, getallTrans, editTrans, delTrans } = require('../controllers/transactionController')
+const express = require('express');
+const { addTrans, getallTrans, editTrans, delTrans } = require('../controllers/transactionController');
 
-//router object
-const router = express.Router()
+const router = express.Router();
 
-//routes
-//add transaction POST method
-router.post('/add-transaction', addTrans)
+// Add transaction (POST)
+router.post('/add-transaction', addTrans);
 
+// Get all transactions (GET)
+router.get('/get-transaction', getallTrans);
 
-router.post('/edit-transaction', editTrans)
+// Edit transaction (PUT)
+router.put('/edit-transaction/:transactionId', editTrans);
 
-
-router.post('/delete-transaction', delTrans)
-
-//get transaction
-router.post('/get-transaction', getallTrans)
-
+// Delete transaction (DELETE)
+router.delete('/delete-transaction/:transactionId', delTrans);
 
 module.exports = router;
